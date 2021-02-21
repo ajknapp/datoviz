@@ -416,10 +416,11 @@ file(GLOB imgui_sources
     "external/imgui/backends/imgui_impl_vulkan.*"
 )
 
+file(GLOB datoviz_headers "include/datoviz/*.h*")
+
 set_source_files_properties(${imgui_sources} PROPERTIES COMPILE_FLAGS -w)
 
 add_library(datoviz SHARED ${sources} ${path_shadersc} ${path_colortex})
-
 
 # -------------------------------------------------------------------------------------------------
 # Datoviz build
@@ -431,7 +432,7 @@ file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/build/artifacts")
 set_target_properties(datoviz PROPERTIES
     VERSION ${DATOVIZ_VERSION}
     SOVERSION 1
-    PUBLIC_HEADER include/datoviz/datoviz.h)
+    PUBLIC_HEADER "${datoviz_headers}")
 add_dependencies(datoviz shaders)
 
 target_compile_definitions(datoviz PUBLIC ${COMPILE_DEFINITIONS})
@@ -440,7 +441,6 @@ target_link_libraries(datoviz ${LINK_LIBS})
 if(${WIN32})
     target_link_libraries(datoviz -static gcc stdc++ winpthread -dynamic)
 endif()
-
 
 # -------------------------------------------------------------------------------------------------
 # Cython build
@@ -535,3 +535,9 @@ endif()
 # add_executable(freetype_example experimental/freetype-example.c)
 # target_include_directories(freetype_example PUBLIC ${INCL_DIRS})
 # target_link_libraries(freetype_example freetype -lm)
+
+install(TARGETS datoviz
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/datoviz
+)
+
